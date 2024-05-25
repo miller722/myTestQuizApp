@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
-import QuizItem from './QuizItem';
+import QuizItem from '../components/QuizItem';
 import { useNavigate } from 'react-router-dom';
 
 const QuizList: React.FC = () => {

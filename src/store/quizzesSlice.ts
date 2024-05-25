@@ -11,11 +11,13 @@ const quizzesSlice = createSlice({
     name: 'quizzes',
     initialState,
     reducers: {
-        addQuiz: (state, action: PayloadAction<{ title: string }>) => {
+        addQuiz: (state, action: PayloadAction<{
+            questions: Question[]; title: string 
+}>) => {
             const newQuiz: Quiz = {
                 id: uuidv4(),
                 title: action.payload.title,
-                questions: [],
+                questions:  action.payload.questions,
             };
             state.quizzes.push(newQuiz);
         },
