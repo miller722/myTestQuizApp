@@ -130,7 +130,7 @@ export const CreateQuiz: React.FC = () => {
                                     type="radio"
                                     name={`question-${question.id}`}
                                     checked={answer.isCorrect}
-                                    onChange={(e) => {
+                                    onChange={() => {
                                         const updatedAnswers = question.answers.map((a, i) =>
                                             ({ ...a, isCorrect: i === answerIndex })
                                         );
