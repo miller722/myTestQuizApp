@@ -6,7 +6,7 @@ import { editQuiz } from '../store/quizzesSlice';
 import { Quiz, Question, Answer } from '../store/types';
 import { v4 as uuidv4 } from 'uuid';
 
-const EditQuiz: React.FC = () => {
+export const EditQuiz: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -27,7 +27,7 @@ const EditQuiz: React.FC = () => {
             quizId: '', // This will be set when the quiz is created
             type: 'single', // default type
             title: '',
-            score: 0,
+            score: 1,
             answers: [],
         };
         setQuestions([...questions, newQuestion]);
@@ -152,4 +152,4 @@ const EditQuiz: React.FC = () => {
     );
 };
 
-export default EditQuiz;
+

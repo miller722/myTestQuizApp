@@ -8,7 +8,7 @@ interface QuizItemProps {
     quiz: Quiz;
 }
 
-const QuizItem: React.FC<QuizItemProps> = ({ quiz }) => {
+export const QuizItem: React.FC<QuizItemProps> = ({ quiz }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -40,4 +40,4 @@ const QuizItem: React.FC<QuizItemProps> = ({ quiz }) => {
     );
 };
 
-export default QuizItem;
+

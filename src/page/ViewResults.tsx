@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 
-const ViewResults: React.FC = () => {
+export const ViewResults: React.FC = () => {
     const { id } = useParams();
     const location = useLocation();
     const score = location.state && (location.state as any).score;
@@ -23,4 +23,3 @@ const ViewResults: React.FC = () => {
     );
 };
 
-export default ViewResults;
