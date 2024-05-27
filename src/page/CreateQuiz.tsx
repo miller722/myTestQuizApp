@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addQuiz, } from '../store/quizzesSlice';
+import { addQuiz } from '../store/quizzesSlice';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { Quiz, Question, Answer } from '../store/types';
 
-const CreateQuiz: React.FC = () => {
+export const CreateQuiz: React.FC = () => {
     const [title, setTitle] = useState('');
     const [questions, setQuestions] = useState<Question[]>([]);
     const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const CreateQuiz: React.FC = () => {
             quizId: '', // This will be set when the quiz is created
             type: 'single', // default type
             title: '',
-            score: 0,
+            score: 1,
             answers: [],
         };
         setQuestions([...questions, newQuestion]);
@@ -41,6 +41,7 @@ const CreateQuiz: React.FC = () => {
         );
         setQuestions(updatedQuestions);
     };
+
     const handleDeleteAnswer = (questionIndex: number, answerId: string) => {
         const updatedQuestions = questions.map((question, i) =>
             i === questionIndex ? { ...question, answers: question.answers.filter(a => a.id !== answerId) } : question
@@ -112,17 +113,32 @@ const CreateQuiz: React.FC = () => {
                                 }}
                                 className="border p-2 w-full"
                             />
-                            <input
-                                type="checkbox"
-                                checked={answer.isCorrect}
-                                onChange={(e) => {
-                                    const updatedAnswers = question.answers.map((a, i) =>
-                                        i === answerIndex ? { ...a, isCorrect: e.target.checked } : a
-                                    );
-                                    handleQuestionChange(questionIndex, { ...question, answers: updatedAnswers });
-                                }}
-                                className="ml-2"
-                            />
+                            {question.type === 'multiple' ? (
+                                <input
+                                    type="checkbox"
+                                    checked={answer.isCorrect}
+                                    onChange={(e) => {
+                                        const updatedAnswers = question.answers.map((a, i) =>
+                                            i === answerIndex ? { ...a, isCorrect: e.target.checked } : a
+                                        );
+                                        handleQuestionChange(questionIndex, { ...question, answers: updatedAnswers });
+                                    }}
+                                    className="ml-2"
+                                />
+                            ) : (
+                                <input
+                                    type="radio"
+                                    name={`question-${question.id}`}
+                                    checked={answer.isCorrect}
+                                    onChange={(e) => {
+                                        const updatedAnswers = question.answers.map((a, i) =>
+                                            ({ ...a, isCorrect: i === answerIndex })
+                                        );
+                                        handleQuestionChange(questionIndex, { ...question, answers: updatedAnswers });
+                                    }}
+                                    className="ml-2"
+                                />
+                            )}
                             <button
                                 onClick={() => handleDeleteAnswer(questionIndex, answer.id)}
                                 className="bg-red-500 text-white px-4 py-2 mt-2 ml-2"
@@ -149,4 +165,3 @@ const CreateQuiz: React.FC = () => {
     );
 };
 
-export default CreateQuiz;

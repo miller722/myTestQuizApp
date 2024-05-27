@@ -1,10 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import QuizList from './page/QuizList';
-import CreateQuiz from './page/CreateQuiz';
-import EditQuiz from './page/EditQuiz';
-import TakeQuiz from './page/TakeQuiz';
-import ViewResults from './page/ViewResults';
+import { QuizList, CreateQuiz, EditQuiz, TakeQuiz, ViewResults } from "./page";
 
 const App: React.FC = () => {
   return (

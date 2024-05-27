@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
 import { Quiz, Question, Answer } from '../store/types';
 
-const TakeQuiz: React.FC = () => {
+export const TakeQuiz: React.FC = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const quizzes = useSelector((state: RootState) => state.quizzes.quizzes);
@@ -17,7 +17,22 @@ const TakeQuiz: React.FC = () => {
     };
 
     const handleAnswerSelect = (answer: Answer) => {
-        setAnswers(prevAnswers => [...prevAnswers, answer]);
+        const currentQuestion = currentQuiz?.questions[currentIndex];
+
+        if (currentQuestion?.type === 'multiple') {
+            setAnswers(prevAnswers => {
+                if (prevAnswers.some(a => a.id === answer.id)) {
+                    return prevAnswers.filter(a => a.id !== answer.id);
+                } else {
+                    return [...prevAnswers, answer];
+                }
+            });
+        } else {
+            setAnswers(prevAnswers => {
+                const filteredAnswers = prevAnswers.filter(a => a.questionId !== answer.questionId);
+                return [...filteredAnswers, answer];
+            });
+        }
     };
 
     const calculateScore = () => {
@@ -25,7 +40,7 @@ const TakeQuiz: React.FC = () => {
         answers.forEach(answer => {
             const question = currentQuiz?.questions.find(q => q.id === answer.questionId);
             if (question && question.answers.some(a => a.isCorrect && a.id === answer.id)) {
-                score += 1;
+                score += question.score;
             }
         });
         return score;
@@ -53,13 +68,25 @@ const TakeQuiz: React.FC = () => {
             <div>
                 {currentQuestion.answers.map(answer => (
                     <div key={answer.id} className="mb-2">
-                        <input
-                            type="radio"
-                            id={answer.id}
-                            name="answer"
-                            value={answer.id}
-                            onChange={() => handleAnswerSelect(answer)}
-                        />
+                        {currentQuestion.type === 'multiple' ? (
+                            <input
+                                type="checkbox"
+                                id={answer.id}
+                                name={`answer-${currentQuestion.id}`}
+                                value={answer.id}
+                                checked={answers.some(a => a.id === answer.id)}
+                                onChange={() => handleAnswerSelect(answer)}
+                            />
+                        ) : (
+                            <input
+                                type="radio"
+                                id={answer.id}
+                                name={`answer-${currentQuestion.id}`}
+                                value={answer.id}
+                                checked={answers.some(a => a.id === answer.id)}
+                                onChange={() => handleAnswerSelect(answer)}
+                            />
+                        )}
                         <label htmlFor={answer.id} className="ml-2">{answer.text}</label>
                     </div>
                 ))}
@@ -79,4 +106,3 @@ const TakeQuiz: React.FC = () => {
     );
 };
 
-export default TakeQuiz;
