@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/store';
-import { editQuiz } from '../store/quizzesSlice';
-import { Quiz, Question, Answer } from '../store/types';
-import { v4 as uuidv4 } from 'uuid';
+import { addAnswer, addQuestion, editQuiz } from '../store/quizzesSlice';
+import { Quiz, Question } from '../store/types';
+
 
 export const EditQuiz: React.FC = () => {
     const { id } = useParams();
@@ -12,6 +12,7 @@ export const EditQuiz: React.FC = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState('');
     const [questions, setQuestions] = useState<Question[]>([]);
+    const [questionsToDelete, setQuestionsToDelete] = useState<string[]>([]);
     const quizzes = useSelector((state: RootState) => state.quizzes.quizzes);
     const currentQuiz: Quiz | undefined = quizzes.find(quiz => quiz.id === id);
 
@@ -22,15 +23,7 @@ export const EditQuiz: React.FC = () => {
         }
     }, [currentQuiz]);
     const handleAddQuestion = () => {
-        const newQuestion: Question = {
-            id: uuidv4(),
-            quizId: '', // This will be set when the quiz is created
-            type: 'single', // default type
-            title: '',
-            score: 1,
-            answers: [],
-        };
-        setQuestions([...questions, newQuestion]);
+        dispatch(addQuestion({ quizId: id as string, question: { title: '' } }));
     };
 
     const handleQuestionChange = (index: number, updatedQuestion: Question) => {
@@ -39,17 +32,8 @@ export const EditQuiz: React.FC = () => {
     };
 
     const handleAddAnswer = (questionIndex: number) => {
-        const newAnswer: Answer = {
-            id: uuidv4(), // generate random id
-            questionId: questions[questionIndex].id,
-            text: '',
-            isCorrect: false,
-            type: 'text', // default type
-        };
-        const updatedQuestions = questions.map((question, i) =>
-            i === questionIndex ? { ...question, answers: [...question.answers, newAnswer] } : question
-        );
-        setQuestions(updatedQuestions);
+        const questionId = questions[questionIndex].id;
+        dispatch(addAnswer({ quizId: id as string, questionId, answer: { text: '', isCorrect: false, type: 'text' } }));
     };
 
     const handleDeleteAnswer = (questionIndex: number, answerId: string) => {
@@ -58,6 +42,13 @@ export const EditQuiz: React.FC = () => {
         );
         setQuestions(updatedQuestions);
     };
+
+    const handleDeleteQuestion = (questionId: string) => {
+        setQuestionsToDelete([...questionsToDelete, questionId]);
+        const updatedQuestions = questions.filter(question => question.id !== questionId);
+        setQuestions(updatedQuestions);
+    };
+
 
     const handleSaveQuiz = () => {
         if (currentQuiz) {
@@ -139,6 +130,12 @@ export const EditQuiz: React.FC = () => {
                     ))}
                     <button onClick={() => handleAddAnswer(questionIndex)} className="bg-green-500 text-white px-4 py-2">
                         Add Answer
+                    </button>
+                    <button
+                        onClick={() => handleDeleteQuestion(question.id)}
+                        className="bg-red-500 text-white px-4 py-2 mt-2 ml-2"
+                    >
+                        Delete Question
                     </button>
                 </div>
             ))}

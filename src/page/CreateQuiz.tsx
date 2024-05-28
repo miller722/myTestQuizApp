@@ -12,10 +12,11 @@ export const CreateQuiz: React.FC = () => {
     const navigate = useNavigate();
 
     const handleAddQuestion = () => {
+        const newQuestionId = uuidv4();
         const newQuestion: Question = {
-            id: uuidv4(),
-            quizId: '', // This will be set when the quiz is created
-            type: 'single', // default type
+            id: newQuestionId,
+            quizId: '',
+            type: 'single',
             title: '',
             score: 1,
             answers: [],
@@ -34,7 +35,7 @@ export const CreateQuiz: React.FC = () => {
             questionId: questions[questionIndex].id,
             text: '',
             isCorrect: false,
-            type: 'text', // default type
+            type: 'text',
         };
         const updatedQuestions = questions.map((question, i) =>
             i === questionIndex ? { ...question, answers: [...question.answers, newAnswer] } : question
@@ -49,13 +50,18 @@ export const CreateQuiz: React.FC = () => {
         setQuestions(updatedQuestions);
     };
 
+    const handleDeleteQuestion = (questionId: string) => {
+        setQuestions(questions.filter(question => question.id !== questionId));
+    };
+
     const handleSaveQuiz = () => {
+        const newQuizId = uuidv4();
         const newQuiz: Quiz = {
-            id: uuidv4(),
+            id: newQuizId,
             title,
-            questions: questions.map((q) => ({ ...q, quizId: uuidv4() })),
+            questions: questions.map((q) => ({ ...q, quizId: newQuizId })),
         };
-        dispatch(addQuiz({ title: newQuiz.title, questions: newQuiz.questions }));
+        dispatch(addQuiz(newQuiz));
         navigate('/');
     };
 
@@ -80,6 +86,7 @@ export const CreateQuiz: React.FC = () => {
                         }
                         className="border p-2 mb-2 w-full"
                     />
+
                     <input
                         type="number"
                         placeholder="Score"
@@ -152,6 +159,12 @@ export const CreateQuiz: React.FC = () => {
                         className="bg-green-500 text-white px-4 py-2 mt-2"
                     >
                         Add Answer
+                    </button>
+                    <button
+                        onClick={() => handleDeleteQuestion(question.id)}
+                        className="bg-red-500 text-white px-4 py-2 mt-2 ml-2"
+                    >
+                        Delete Question
                     </button>
                 </div>
             ))}
