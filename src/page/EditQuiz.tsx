@@ -12,6 +12,7 @@ export const EditQuiz: React.FC = () => {
     const dispatch = useDispatch();
     const [title, setTitle] = useState('');
     const [questions, setQuestions] = useState<Question[]>([]);
+    const [timeLimit, setTimeLimit] = useState(10);
     const [questionsToDelete, setQuestionsToDelete] = useState<string[]>([]);
     const quizzes = useSelector((state: RootState) => state.quizzes.quizzes);
     const currentQuiz: Quiz | undefined = quizzes.find(quiz => quiz.id === id);
@@ -52,7 +53,7 @@ export const EditQuiz: React.FC = () => {
 
     const handleSaveQuiz = () => {
         if (currentQuiz) {
-            dispatch(editQuiz({ id: currentQuiz.id, title, questions }));
+            dispatch(editQuiz({ id: currentQuiz.id, title, questions, timeLimit }));
             navigate('/');
         }
     };
@@ -67,6 +68,13 @@ export const EditQuiz: React.FC = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 className="border p-2 mb-4 w-full"
             />
+            <h3>Time limit:</h3>
+            <input
+                type="number"
+                value={timeLimit}
+                onChange={(e) => setTimeLimit(Number(e.target.value))}
+                className="border p-2 mb-2 w-full"
+            />
             {questions.map((question, questionIndex) => (
                 <div key={question.id} className="mb-4 border p-4">
                     <input
@@ -76,6 +84,7 @@ export const EditQuiz: React.FC = () => {
                         onChange={(e) => handleQuestionChange(questionIndex, { ...question, title: e.target.value })}
                         className="border p-2 mb-2 w-full"
                     />
+                    <h3>Point:</h3>
                     <input
                         type="number"
                         placeholder="Score"

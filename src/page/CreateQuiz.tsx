@@ -8,6 +8,7 @@ import { Quiz, Question, Answer } from '../store/types';
 export const CreateQuiz: React.FC = () => {
     const [title, setTitle] = useState('');
     const [questions, setQuestions] = useState<Question[]>([]);
+    const [timeLimit, setTimeLimit] = useState(10);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -60,6 +61,7 @@ export const CreateQuiz: React.FC = () => {
             id: newQuizId,
             title,
             questions: questions.map((q) => ({ ...q, quizId: newQuizId })),
+            timeLimit: timeLimit * 60,
         };
         dispatch(addQuiz(newQuiz));
         navigate('/');
@@ -75,6 +77,13 @@ export const CreateQuiz: React.FC = () => {
                 onChange={(e) => setTitle(e.target.value)}
                 className="border p-2 mb-4 w-full"
             />
+            <h3>Time limit:</h3>
+            <input
+                type="number"
+                value={timeLimit}
+                onChange={(e) => setTimeLimit(Number(e.target.value))}
+                className="border p-2 mb-2 w-full"
+            />
             {questions.map((question, questionIndex) => (
                 <div key={question.id} className="mb-4 border p-4">
                     <input
@@ -86,7 +95,7 @@ export const CreateQuiz: React.FC = () => {
                         }
                         className="border p-2 mb-2 w-full"
                     />
-
+                    <h3>Point:</h3>
                     <input
                         type="number"
                         placeholder="Score"
@@ -96,6 +105,7 @@ export const CreateQuiz: React.FC = () => {
                         }
                         className="border p-2 mb-2 w-full"
                     />
+
                     <select
                         value={question.type}
                         onChange={(e) =>

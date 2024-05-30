@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/store';
@@ -11,6 +11,26 @@ export const TakeQuiz: React.FC = () => {
     const currentQuiz: Quiz | undefined = quizzes.find(quiz => quiz.id === id);
     const [answers, setAnswers] = useState<Answer[]>([]);
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(currentQuiz ? currentQuiz.timeLimit : 600); // Set initial time based on the quiz's time limit
+
+    useEffect(() => {
+        if (!currentQuiz) {
+            return;
+        }
+
+        const timer = setInterval(() => {
+            setTimeLeft(prevTime => {
+                if (prevTime <= 1) {
+                    clearInterval(timer);
+                    handleFinishQuiz(); // Finish the quiz when time is up
+                    return 0;
+                }
+                return prevTime - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [currentQuiz]);
 
     const handleNextQuestion = () => {
         setCurrentIndex(prevIndex => prevIndex + 1);
@@ -61,9 +81,18 @@ export const TakeQuiz: React.FC = () => {
         return <div>No more questions</div>;
     }
 
+    const formatTime = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    };
+
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Take Quiz</h1>
+            <div className="mb-4">
+                <span className="font-bold">Time Left: </span>{formatTime(timeLeft)}
+            </div>
             <h2 className="text-xl font-bold mb-2">{currentQuestion.title}</h2>
             <div>
                 {currentQuestion.answers.map(answer => (
@@ -105,4 +134,3 @@ export const TakeQuiz: React.FC = () => {
         </div>
     );
 };
-
