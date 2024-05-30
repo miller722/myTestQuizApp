@@ -12,12 +12,13 @@ const quizzesSlice = createSlice({
     initialState,
     reducers: {
         addQuiz: (state, action: PayloadAction<{
-            questions: Question[]; title: string 
+            questions: Question[]; title: string ;  timeLimit: number
 }>) => {
             const newQuiz: Quiz = {
                 id: uuidv4(),
                 title: action.payload.title,
                 questions:  action.payload.questions,
+                timeLimit: action.payload.timeLimit
             };
             state.quizzes.push(newQuiz);
         },

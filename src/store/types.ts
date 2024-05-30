@@ -2,6 +2,7 @@ export interface Quiz {
     id: string;
     title: string;
     questions: Question[];
+    timeLimit: number; 
 }
 
 export interface QuizzesState {
